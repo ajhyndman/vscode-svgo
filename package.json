@@ -2,8 +2,10 @@
     "name": "vscode-svgo",
     "displayName": "SVGO",
     "description": "Use SVGO to optimise SVG files from within VS Code",
-    "version": "0.0.1",
+    "version": "0.1.0",
     "publisher": "ajhyndman",
+    "author": "Andrew Hyndman <ajhyndman@hotmail.com>",
+    "icon": "icon.png",
     "engines": {
         "vscode": "^1.16.0"
     },
@@ -15,6 +17,15 @@
         "onCommand:extension.optimizeSelection"
     ],
     "main": "./out/src/extension",
+    "license": "MIT",
+    "private": "true",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/ajhyndman/vscode-svgo.git"
+    },
+    "bugs": {
+        "url": "https://github.com/ajhyndman/vscode-svgo/issues"
+    },
     "contributes": {
         "commands": [
             {
