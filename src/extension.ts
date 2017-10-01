@@ -1,29 +1,54 @@
 'use strict';
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 
-// this method is called when your extension is activated
-// your extension is activated the very first time the command is executed
+import resolveModule from './resolveModule';
+import { getFullDocumentRange, replaceSelection } from './utils';
+
 export function activate(context: vscode.ExtensionContext) {
+  // Attempt to load the SVGO module.
+  let svgo;
+  try {
+    const SVGO = resolveModule('svgo', vscode.workspace.rootPath);
+    svgo = new SVGO();
+  } catch (e) {
+    // This error will generally be too low level to be useful to users.
+    // We log it for debugging purposes, anyway.
+    console.log(e);
+  }
 
-    // Use the console to output diagnostic information (console.log) and errors (console.error)
-    // This line of code will only be executed once when your extension is activated
-    console.log('Congratulations, your extension "vscode-svgo" is now active!');
+  // Register VS Code commands.
+  const disposable = vscode.commands.registerCommand(
+    'extension.optimizeActiveFile',
+    () => {
+      if (svgo == null) {
+        vscode.window.showErrorMessage(
+          'The svgo package is not available. Please install it locally or globally, and reload VS Code.',
+        );
+        return;
+      }
 
-    // The command has been defined in the package.json file
-    // Now provide the implementation of the command with  registerCommand
-    // The commandId parameter must match the command field in package.json
-    let disposable = vscode.commands.registerCommand('extension.sayHello', () => {
-        // The code you place here will be executed every time your command is executed
+      // Get active editor contents.
+      const activeEditorContents = vscode.window.activeTextEditor.document.getText();
+      console.log('current file contents', activeEditorContents);
 
-        // Display a message box to the user
-        vscode.window.showInformationMessage('Hello World!');
-    });
+      try {
+        svgo.optimize(activeEditorContents, ({ data }) => {
+          // Replace entire active editor contents
+          console.log('optimisation result', data);
+          replaceSelection(
+            vscode.window.activeTextEditor,
+            getFullDocumentRange(vscode.window.activeTextEditor.document),
+            data,
+          );
+        });
+      } catch (e) {
+        console.log(e);
+        vscode.window.showErrorMessage(e.toString());
+      }
+    },
+  );
 
-    context.subscriptions.push(disposable);
+  context.subscriptions.push(disposable);
 }
 
-// this method is called when your extension is deactivated
-export function deactivate() {
-}
+export function deactivate() {}
