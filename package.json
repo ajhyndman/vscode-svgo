@@ -11,7 +11,8 @@
         "Other"
     ],
     "activationEvents": [
-        "onCommand:extension.optimizeActiveFile"
+        "onCommand:extension.optimizeActiveFile",
+        "onCommand:extension.optimizeSelection"
     ],
     "main": "./out/src/extension",
     "contributes": {
@@ -19,6 +20,10 @@
             {
                 "command": "extension.optimizeActiveFile",
                 "title": "SVGO: Optimize current file"
+            },
+            {
+                "command": "extension.optimizeSelection",
+                "title": "SVGO: Optimize current selection"
             }
         ]
     },
